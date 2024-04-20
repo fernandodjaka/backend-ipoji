@@ -53,3 +53,4 @@ $routes->resource('artikel', ['controller' => 'ArtikelController']);
 $routes->get('artikel/(:segment)', 'ArtikelController::show/$1');
 $routes->match(['post', 'options'], 'api/artikel', 'ArtikelController::create');
 $routes->match(['delete', 'options'], 'delete/artikel/(:segment)', 'ArtikelController::delete/$1');
+$routes->match(['put', 'options'], 'update/artikel/(:segment)', 'ArtikelController::update/$1');

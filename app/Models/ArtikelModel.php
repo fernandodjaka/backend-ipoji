@@ -11,7 +11,7 @@ class ArtikelModel extends Model
     protected $returnType = 'array'; // Tipe data yang dihasilkan dalam bentuk array
     protected $useSoftDeletes = false;
 
-    protected $allowedFields = ['judul_artikel', 'deskripsi_artikel','gambar_produk'];
+    protected $allowedFields = ['judul_artikel', 'deskripsi_artikel','gambar_artikel'];
     // Tambahkan fungsi untuk mendapatkan semua produk
     public function getAllArticle()
     {
