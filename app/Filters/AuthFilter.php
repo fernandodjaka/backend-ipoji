@@ -5,9 +5,10 @@ namespace App\Filters;
 use CodeIgniter\Filters\FilterInterface;
 use CodeIgniter\HTTP\RequestInterface;
 use CodeIgniter\HTTP\ResponseInterface;
-use Config\Services;
+use Firebase\JWT\JWT;
+use Firebase\JWT\Key;
 
-class Cors implements FilterInterface
+class AuthFilter implements FilterInterface
 {
     /**
      * Do whatever processing this filter needs to do.
@@ -26,25 +27,35 @@ class Cors implements FilterInterface
      */
     public function before(RequestInterface $request, $arguments = null)
     {
-        header("Content-Type: application/json; charset=UTF-8");
-        header("Access-Control-Allow-Origin: http://localhost:3000");
-        header("Access-Control-Allow-Headers: X-API-KEY, Origin, X-Requested-With, Content-Type, Accept, Access-Control-Requested-Method, Authorization");
-        header("Access-Control-Allow-Methods: GET, POST, OPTIONS, PATCH, PUT, DELETE");
-        header("Access-Control-Allow-Credentials: true");
-        header('Access-Control-Max-Age: 86400');
-        
-        $method = $_SERVER['REQUEST_METHOD'];
-    
-        if ($method == "OPTIONS") {
-        header('Access-Control-Allow-Origin: http://localhost:3000');
-        header("Access-Control-Allow-Methods: GET, POST, OPTIONS, PATCH, PUT, DELETE");
-
-        header("Access-Control-Allow-Headers: X-API-KEY, Origin, X-Requested-With, Content-Type, Accept, Access-Control-Requested-Method, Authorization");
-
-        header('Access-Control-Max-Age: 86400');
-        header('Content-Length: 0');
-        header('Content-Type: application/json; charset=UTF-8');
-        exit();
+        $key = getenv('JWT_SECRET');
+        $header = $request->getHeaderLine("Authorization");
+        $token = null;
+  
+        // extract the token from the header
+        if(!empty($header)) {
+            if (preg_match('/Bearer\s+(.*)$/', $header, $matches)) {
+                $token = $matches[1];
+            }
+        }
+  
+        // check if token is null or empty
+        if(is_null($token) || empty($token)) {
+            $response = service('response');
+            $response->setBody('Access denied');
+            $response->setStatusCode(401);
+            return $response;
+        }
+  
+        try {
+            // $decoded = JWT::decode($token, $key, array("HS256"));
+            $decoded = JWT::decode($token, new Key($key, 'HS256'));
+             $userId = $decoded->iss;
+            $request->id_user = $userId;
+        } catch (\Exception $ex) {
+            $response = service('response');
+            $response->setBody('Access denied');
+            $response->setStatusCode(401);
+            return $response;
         }
     }
 
@@ -62,6 +73,6 @@ class Cors implements FilterInterface
      */
     public function after(RequestInterface $request, ResponseInterface $response, $arguments = null)
     {
-        
+        //
     }
 }

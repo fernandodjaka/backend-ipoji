@@ -6,18 +6,13 @@ use CodeIgniter\Model;
 
 class CartModel extends Model
 {
-    protected $table = 'cart'; // Sesuaikan dengan nama tabel keranjang Anda
+    protected $table = 'cart';
     protected $primaryKey = 'id_cart';
     protected $returnType = 'array';
     protected $useSoftDeletes = false;
 
-    protected $allowedFields = ['id_produk', 'jumlah', 'harga_total']; // Sesuaikan dengan struktur tabel cart Anda
+    protected $allowedFields = ['id_produk', 'jumlah', 'harga_total', 'id_user']; // Menambahkan id_user
 
-    // Jika Anda ingin mengaktifkan fitur soft deletes, Anda dapat mengonfigurasi di sini.
-    // protected $useSoftDeletes = true;
-    // protected $deletedField = 'deleted_at';
-
-    // Fungsi untuk menambahkan produk ke keranjang
     public function addToCart($data)
     {
         $this->insert($data);
@@ -36,11 +31,17 @@ class CartModel extends Model
 
     public function updateCartItem($cartId, $data)
     {
-        return $this->update($cartId, $data);
+        return $this->update($cartId, $data); // Memperbaiki parameter update
     }
 
     public function calculateTotal($userId)
     {
         return $this->selectSum('harga_total')->where('id_user', $userId)->get()->getRowArray();
+    }
+
+    // Relasi dengan tabel produk
+    public function produk()
+    {
+        return $this->belongsTo('App\Models\ProdukModel', 'id_produk', 'id_produk');
     }
 }

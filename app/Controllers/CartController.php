@@ -5,13 +5,45 @@ namespace App\Controllers;
 use CodeIgniter\API\ResponseTrait;
 use App\Models\CartModel;
 use App\Models\ProdukModel;
+use \Firebase\JWT\JWT; // Import library JWT
 
 class CartController extends BaseController
 {
     use ResponseTrait;
 
+    private $secretKey = "HS256"; // Ganti dengan secret key Anda
+
+    public function __construct()
+    {
+        // Load model dan library yang diperlukan
+    }
+
+    public function getUserIdFromToken()
+    {
+        $token = $this->request->getHeader('Authorization');
+
+        if (!$token) {
+            return null;
+        }
+
+        $token = str_replace('Bearer ', '', $token);
+
+        try {
+            $decodedToken = JWT::decode($token, $this->secretKey, ['HS256']);
+            return $decodedToken->data->id_user;
+        } catch (\Exception $e) {
+            return null;
+        }
+    }
+
     public function addToCart($id_produk)
     {
+        $userId = $this->getUserIdFromToken(); // Mengambil ID user dari token
+
+        if (!$userId) {
+            return $this->failUnauthorized('Unauthorized');
+        }
+
         $produkModel = new ProdukModel();
         $product = $produkModel->find($id_produk);
 
@@ -19,7 +51,7 @@ class CartController extends BaseController
             return $this->failNotFound('Produk tidak ditemukan.');
         }
 
-        $quantity = 1; // Misalnya, tambahkan satu produk ke keranjang
+        $quantity = 1;
         $totalPrice = $quantity * $product['harga_produk'];
 
         $cartModel = new CartModel();
@@ -27,10 +59,10 @@ class CartController extends BaseController
             'id_produk' => $id_produk,
             'jumlah' => $quantity,
             'harga_total' => $totalPrice,
-            'id_user' => 1, // Ganti dengan ID pengguna yang sesuai
+            'id_user' => $userId,
         ];
 
-        $cartId = $cartModel->insert($data); // Menggunakan metode insert bawaan Model
+        $cartId = $cartModel->insert($data);
 
         return $this->respondCreated(['cart_id' => $cartId], 'Produk berhasil ditambahkan ke keranjang.');
     }
@@ -49,7 +81,7 @@ class CartController extends BaseController
 
     public function getTotal()
     {
-        $userId = 1; // Ganti dengan ID pengguna yang sesuai
+        $userId = $this->getUserIdFromToken();
         $cartModel = new CartModel();
         $total = $cartModel->calculateTotal($userId);
 
