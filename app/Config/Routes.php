@@ -8,6 +8,7 @@ use CodeIgniter\Router\RouteCollection;
 $routes->get('/', 'Home::index');
 
 $routes->resource('user', ['controller' => 'userController']);
+$routes->match(['post', 'options'], 'api/registertoko', 'TokoController::create');
 $routes->match(['post', 'options'], 'api/register', 'userController::create');
 $routes->match(['put', 'options'], 'update/user/(:segment)','userController::update/$1',['filter' => 'cors', 'authFilter']);
 $routes->match(['delete', 'options'], 'delete/user/(:segment)','userController::deleteUser/$1', ['filter' => 'cors', 'authFilter']);
@@ -19,6 +20,8 @@ $routes->match(['post', 'options'], 'api/produk', 'ProdukController::create',['f
 $routes->match(['delete', 'options'], 'delete/produk/(:segment)', 'ProdukController::delete/$1',['filter' => 'cors', 'authFilter']);
 
 $routes->match(['post', 'options'], 'login', 'LoginController::index', ['filter' => 'cors', 'authFilter']);
+$routes->match(['post', 'options'], 'loginadmin', 'AdminController::index', ['filter' => 'cors','authFilter']);
+$routes->match(['post', 'options'], 'loginpenjual', 'PenjualController::index', ['filter' => 'cors','authFilter']);
 
 
 $routes->post('logout', 'UserController::logout');
@@ -30,7 +33,8 @@ $routes->post('logout', 'UserController::logout');
 $routes->resource('api/cart', ['controller' => 'CartController']);
 $routes->post('api/cart/add/(:num)', 'CartController::addToCart/$1',['filter' => 'cors', 'authFilter']);
 $routes->delete('api/cart/delete/(:num)', 'CartController::deleteItem/$1',['filter' => 'cors', 'authFilter']);
-$routes->get('api/cart/total', 'CartController::getTotal',['filter' => 'cors', 'authFilter']);
+$routes->get('api/cart', 'CartController::index', ['filter' => 'cors', 'authFilter']);
+
 
 
 $routes->resource('orders', ['controller' => 'OrdersController']);
@@ -44,15 +48,12 @@ $routes->match(['put', 'options'], 'api/delivery/update/(:segment)', 'DeliveryCo
 $routes->match(['delete', 'options'], 'api/delivery/delete/(:segment)', 'DeliveryController::delete/$1',['filter' => 'cors', 'authFilter']);
 
 
-$routes->resource('admin', ['controller' => 'AdminController']);
-$routes->match(['post', 'options'], 'admin/register', 'AdminController::create');
-$routes->match(['post', 'options'], 'admin/login', 'LoginAdmin::login');
-$routes->match(['put', 'options'], 'update/admin/(:segment)','AdminController::update/$1');
-$routes->match(['delete', 'options'], 'delete/admin/(:segment)','AdminController::deleteUser/$1');
-
 
 $routes->resource('artikel', ['controller' => 'ArtikelController']);
 $routes->get('artikel/(:segment)', 'ArtikelController::show/$1');
 $routes->match(['post', 'options'], 'api/artikel', 'ArtikelController::create',['filter' => 'cors', 'authFilter']);
 $routes->match(['delete', 'options'], 'delete/artikel/(:segment)', 'ArtikelController::delete/$1',['filter' => 'cors', 'authFilter']);
 $routes->match(['put', 'options'], 'update/artikel/(:segment)', 'ArtikelController::update/$1',['filter' => 'cors', 'authFilter']);
+
+$routes->get('api/ongkir/getKota', 'Ongkir::getKota');
+$routes->post('api/ongkir/cekOngkir', 'Ongkir::cekOngkir');

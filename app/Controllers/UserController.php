@@ -36,43 +36,49 @@ class UserController extends ResourceController
     return $this->respond($response);
 }
 
-    public function create() {
-        if ($this->request->getMethod() === 'options') {
-            // Handle OPTIONS request (tidak perlu validasi atau penyimpanan data)
-            return $this->response->setStatusCode(200);
-        }
-    
-        helper(['form']);
-        $rules = [
-            'email' => 'required',
-            'password' => 'required',
-            'name' => 'required'
-        ];
-    
-        if (!$this->validate($rules)) {
-            return $this->fail($this->validator->getErrors());
-        }
-    
-        $data = [
-            'email' => $this->request->getVar('email'),
-            'password' => password_hash($this->request->getVar('password'), PASSWORD_DEFAULT),
-            'name' => $this->request->getVar('name')
-        ];
-    
-        $model = new UserModel();
-        $model->insert($data);
-    
-        $response = [
-            'status' => 200, // Change status code to 200 (Created)
-            'error' => null,
-            'messages' => [
-                'success' => "Data Inserted"
-            ]
-        ];
-    
-        return $this->respondCreated($response);
+public function create() {
+    if ($this->request->getMethod() === 'options') {
+        // Handle OPTIONS request (tidak perlu validasi atau penyimpanan data)
+        return $this->response->setStatusCode(200);
     }
-    
+
+    // Memeriksa apakah email sudah ada dalam database
+    $model = new UserModel();
+    $existingUser = $model->where('email', $this->request->getVar('email'))->first();
+    if ($existingUser) {
+        return $this->fail('Email sudah digunakan', 409); // 409: Conflict
+    }
+
+    helper(['form']);
+    $rules = [
+        'email' => 'required',
+        'password' => 'required',
+        'name' => 'required'
+    ];
+
+    if (!$this->validate($rules)) {
+        return $this->fail($this->validator->getErrors());
+    }
+
+    $data = [
+        'email' => $this->request->getVar('email'),
+        'password' => password_hash($this->request->getVar('password'), PASSWORD_DEFAULT),
+        'name' => $this->request->getVar('name')
+    ];
+
+    $model->insert($data);
+
+    $response = [
+        'status' => 200, // Change status code to 200 (Created)
+        'error' => null,
+        'messages' => [
+            'success' => "Data Inserted"
+        ]
+    ];
+
+    return $this->respondCreated($response);
+}
+
     public function update($id = null)
 {
     // Membuat instance dari UserModel

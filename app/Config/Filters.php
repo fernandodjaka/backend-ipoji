@@ -20,18 +20,22 @@ class Filters extends BaseConfig
      *                                               or [filter_name => [classname1, classname2, ...]]
      * @phpstan-var array<string, class-string|list<class-string>>
      */
-    public array $aliases = [
+    public $aliases = [
+        // Aliases for built-in filters
         'csrf'          => CSRF::class,
         'toolbar'       => DebugToolbar::class,
         'honeypot'      => Honeypot::class,
+        'authFilter'    => \App\Filters\AuthFilter::class, // Menambahkan authFilter ke dalam aliases
         'cors'          => Cors::class,
-        'cors' => \App\Filters\Cors::class,
         'invalidchars'  => InvalidChars::class,
         'secureheaders' => SecureHeaders::class,
-        'auth'          => \App\Filters\Auth::class,
-
     ];
-
+    
+    public $filters = [
+        'authFilter' => [], // Menambahkan konfigurasi kosong untuk authFilter
+        'cors'      => ['before' => ['loginadmin']], // Menggunakan filter 'cors' pada rute 'loginadmin'
+    ];
+    
     /**
      * List of filter aliases that are always
      * applied before and after every request.
@@ -72,9 +76,5 @@ class Filters extends BaseConfig
      * Example:
      * 'isLoggedIn' => ['before' => ['account/*', 'profiles/*']]
      */
-    public array $filters = [
-        'cors' => \App\Filters\Cors::class,
-    ];
-    
 }
 

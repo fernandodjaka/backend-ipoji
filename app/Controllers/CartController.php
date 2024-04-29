@@ -17,6 +17,7 @@ class CartController extends BaseController
     {
         // Load model dan library yang diperlukan
     }
+    
 
     public function getUserIdFromToken()
     {
@@ -87,4 +88,19 @@ class CartController extends BaseController
 
         return $this->respond(['total' => $total['harga_total']]);
     }
+
+    public function index()
+{
+    $userId = $this->getUserIdFromToken(); // Mendapatkan ID user dari token
+
+    if (!$userId) {
+        return $this->failUnauthorized('Unauthorized');
+    }
+
+    $cartModel = new CartModel();
+    $cartItems = $cartModel->where('id_user', $userId)->findAll(); // Query untuk mengambil data keranjang berdasarkan ID user
+
+    return $this->respond($cartItems);
+}
+
 }

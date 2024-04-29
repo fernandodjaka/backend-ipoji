@@ -108,58 +108,58 @@ public function create()
     }
 
     public function update($id = null)
-{
-    // Membuat instance dari ArtikelModel
-    $artikelModel = new ArtikelModel();
-
-    // Mengambil data artikel berdasarkan ID
-    $artikel = $artikelModel->find($id);
-
-    // Memeriksa apakah data artikel ditemukan
-    if ($artikel) {
-        // Mengambil data dari request yang dikirim
-        $gambar = $this->request->getFile('gambar_artikel');
-        $namaGambar = $artikel['gambar_artikel'];
-
-        if ($gambar->isValid()) {
-            if (file_exists('gambar/' . $artikel['gambar_artikel'])) {
-                unlink('gambar/' . $artikel['gambar_artikel']);
+    {
+        $artikelModel = new ArtikelModel();
+        $artikel = $artikelModel->find($id);
+    
+        if ($artikel) {
+            // Mengambil data dari request yang dikirim
+            $gambar = $this->request->getFile('gambar_artikel');
+            $namaGambar = $artikel['gambar_artikel'];
+    
+            if ($gambar->isValid()) {
+                if (file_exists('gambar/' . $artikel['gambar_artikel'])) {
+                    unlink('gambar/' . $artikel['gambar_artikel']);
+                }
+    
+                $namaGambar = $gambar->getRandomName();
+                $gambar->move('gambar', $namaGambar);
             }
-
-            $namaGambar = $gambar->getRandomName();
-            $gambar->move('gambar', $namaGambar);
-        }
-
-        $data = [
-            'judul_artikel' => $this->request->getVar('judul_artikel'),
-            'deskripsi_artikel' => $this->request->getVar('deskripsi_artikel'),
-            'gambar_artikel' => $namaGambar,
-        ];
-
-        // Menggunakan metode update dari ArtikelModel dengan kondisi where berdasarkan ID
-        $proses = $artikelModel->update($id, $data);
-
-        // Memeriksa apakah proses update berhasil
-        if ($proses) {
-            // Jika berhasil, buat respons dengan status 200 dan informasi sukses
-            $response = [
-                'status' => 200,
-                'messages' => 'Data berhasil diubah',
-                'data' => $data,
+    
+            $data = [
+                'judul_artikel' => $this->request->getVar('judul_artikel'),
+                'deskripsi_artikel' => $this->request->getVar('deskripsi_artikel'),
+                'gambar_artikel' => $namaGambar,
             ];
-        } else {
-            // Jika gagal, buat respons dengan status 402 dan informasi kegagalan
-            $response = [
-                'status' => 402,
-                'messages' => 'Gagal diubah',
-            ];
+    
+            $this->validate([
+                'judul_artikel' => 'required',
+                'deskripsi_artikel' => 'required',
+                'gambar_artikel' => 'uploaded[gambar_artikel]|max_size[gambar_artikel,1024]|is_image[gambar_artikel]|mime_in[gambar_artikel,image/jpg,image/jpeg,image/png]',
+            ]);
+    
+            if ($this->validator->withRequest($this->request)->run() == false) {
+                return $this->failValidationErrors($this->validator->getErrors());
+            }
+    
+            $proses = $artikelModel->update($id, $data);
+    
+            if ($proses) {
+                $response = [
+                    'status' => 200,
+                    'messages' => 'Data berhasil diubah',
+                    'data' => $data,
+                ];
+            } else {
+                $response = [
+                    'status' => 402,
+                    'messages' => 'Gagal diubah',
+                ];
+            }
+    
+            return $this->respond($response);
         }
-
-        // Mengembalikan respons dalam bentuk JSON
-        return $this->respond($response);
+    
+        return $this->failNotFound('Data tidak ditemukan');
     }
-
-    // Jika data tidak ditemukan, kirim respons bahwa data tidak ditemukan
-    return $this->failNotFound('Data tidak ditemukan');
-}
-}
+}    

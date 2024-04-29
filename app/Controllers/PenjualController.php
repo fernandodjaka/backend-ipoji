@@ -3,11 +3,11 @@
 namespace App\Controllers;
 
 use CodeIgniter\API\ResponseTrait;
-use App\Models\AdminModel;
+use App\Models\PenjualModel;
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 
-class AdminController extends BaseController
+class PenjualController extends BaseController
 {
     use ResponseTrait;
 
@@ -15,24 +15,24 @@ class AdminController extends BaseController
 
     public function index()
     {
-        $adminModel = new AdminModel();
+        $penjualModel = new PenjualModel();
 
         $email = $this->request->getVar('email');
         $password = $this->request->getVar('password');
 
-        $admin = $adminModel->where('email', $email)->first();
+        $penjual = $penjualModel->where('email', $email)->first();
 
-        if (is_null($admin)) {
-            // Admin not found
-            return $this->respond(['message' => 'Akun admin belum didaftarkan'], 401);
+        if (is_null($penjual)) {
+            // User not found
+            return $this->respond(['message' => 'Akun belum didaftarkan'], 401);
         }
 
         // Check password
-        $pwd_verify = password_verify($password, $admin['password']);
+        $pwd_verify = password_verify($password, $penjual['password']);
 
         if (!$pwd_verify) {
             // Password is incorrect
-            return $this->respond(['message' => 'Login admin failed, incorrect password'], 401);
+            return $this->respond(['message' => 'Login failed, incorrect password'], 401);
         }
 
         $key = getenv('JWT_SECRET');
@@ -40,12 +40,12 @@ class AdminController extends BaseController
         $exp = $iat + 3600;
 
         $payload = [
-            "iss" => $admin['id'],  // ID admin
+            "iss" => $penjual['id'],  // ID pengguna
             "aud" => "Audience that the JWT",
             "sub" => "Subject of the JWT",
             "iat" => $iat, //Time the JWT issued at
             "exp" => $exp, // Expiration time of token
-            "email" => $admin['email'],
+            "email" => $penjual['email'],
         ];
 
         $token = JWT::encode($payload, $key, 'HS256');
@@ -53,17 +53,17 @@ class AdminController extends BaseController
         $response = [
             'code' => 200,
             'status' => 'success',
-            'messages' => 'Login admin successfully',
+            'messages' => 'Login successfully',
             'token' => $token,
-            'admin_id' => $admin['id'],
-            'admin_name' => $admin['name'],
-            'admin_email' => $admin['email'],
+            'penjual_id' => $penjual['id'],
+            'penjual_name' => $penjual['name'],
+            'penjual_email' => $penjual['email'],
         ];
 
         return $this->respond($response);
     }
 
-    public function getAdminData()
+    public function getPenjualData()
     {
         $key = getenv('JWT_SECRET');
         $header = $this->request->getHeaderLine("Authorization");
@@ -84,17 +84,17 @@ class AdminController extends BaseController
         try {
             $decoded = JWT::decode($token, new Key($key, 'HS256'));
 
-            // Ambil informasi admin dari token
+            // Ambil informasi pengguna dari token
             $iss = $decoded->iss;
 
-            // Dapatkan data admin dari database
-            $adminModel = new AdminModel();
-            $adminData = $adminModel->where('id', $iss)->first();
+            // Dapatkan data pengguna dari database
+            $penjualModel = new PenjualModel();
+            $penjualData = $penjualModel->where('id', $iss)->first();
 
-            if ($adminData) {
-                return $this->respond($adminData);
+            if ($penjualData) {
+                return $this->respond($penjualData);
             } else {
-                return $this->failNotFound('Admin not found');
+                return $this->failNotFound('User not found');
             }
         } catch (\Exception $ex) {
             return $this->respond(['error' => 'Access denied'], 401);
