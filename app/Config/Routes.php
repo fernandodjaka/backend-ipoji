@@ -30,11 +30,22 @@ $routes->post('logout', 'UserController::logout');
 
 // app/Config/Routes.php
 
-$routes->resource('api/cart', ['controller' => 'CartController']);
-$routes->post('api/cart/add/(:num)', 'CartController::addToCart/$1',['filter' => 'cors', 'authFilter']);
-$routes->delete('api/cart/delete/(:num)', 'CartController::deleteItem/$1',['filter' => 'cors', 'authFilter']);
-$routes->get('api/cart', 'CartController::index', ['filter' => 'cors', 'authFilter']);
+$routes->group('cart', ['namespace' => 'App\Controllers'], function ($routes) {
+    $routes->post('add', 'CartController::add');
+});
 
+
+
+$routes->group('api/ongkir', function($routes)
+{
+    $routes->get('getKota', 'Ongkir::getKota');
+    $routes->post('cekOngkir', 'Ongkir::cekOngkir');
+});
+
+$routes->group('api/kota', function($routes)
+{
+    $routes->get('get_kota', 'Kota::get_kota');
+});
 
 
 $routes->resource('orders', ['controller' => 'OrdersController']);

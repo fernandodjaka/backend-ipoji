@@ -1,14 +1,15 @@
 <?php
+
 namespace App\Controllers;
+
 use CodeIgniter\Controller;
 
-class Kota extends Controller {
-
-    public function get_kota($q) {
-        $apiKey = "0c47f3bf73d0910ebc152bcb224e2ad9"; // Ganti dengan kunci API Anda
-
-        // Membuat array untuk menampung data kota
-        $results = [];
+class Kota extends Controller
+{
+    public function get_kota($q)
+    {
+        // Tambahkan kunci API Anda di sini
+        $apiKey = "77f24e2edd49b1e23c318f8170fa7456";
 
         // Lakukan permintaan ke API RajaOngkir
         $curl = curl_init();
@@ -29,7 +30,10 @@ class Kota extends Controller {
         curl_close($curl);
         $data = json_decode($response, true);
 
-        // Mengisi array results dengan data kota
+        // Buat array untuk menampung data kota
+        $results = [];
+
+        // Isi array results dengan data kota
         foreach ($data['rajaongkir']['results'] as $city) {
             $results[] = [
                 'city_id' => $city['city_id'],
@@ -40,5 +44,4 @@ class Kota extends Controller {
         // Kembalikan data sebagai respons JSON
         return $this->response->setJSON(['results' => $results]);
     }
-
 }
