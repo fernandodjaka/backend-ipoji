@@ -35,17 +35,9 @@ $routes->group('cart', ['namespace' => 'App\Controllers'], function ($routes) {
 });
 
 
-
-$routes->group('api/ongkir', function($routes)
-{
-    $routes->get('getKota', 'Ongkir::getKota');
-    $routes->post('cekOngkir', 'Ongkir::cekOngkir');
-});
-
-$routes->group('api/kota', function($routes)
-{
-    $routes->get('get_kota', 'Kota::get_kota');
-});
+$routes->get('api/province', 'RajaOngkirProxy::getProvince');
+$routes->get('api/city', 'RajaOngkirProxy::getCity');
+$routes->post('api/cost', 'RajaOngkirProxy::getCost');
 
 
 $routes->resource('orders', ['controller' => 'OrdersController']);
@@ -68,3 +60,7 @@ $routes->match(['put', 'options'], 'update/artikel/(:segment)', 'ArtikelControll
 
 $routes->get('api/ongkir/getKota', 'Ongkir::getKota');
 $routes->post('api/ongkir/cekOngkir', 'Ongkir::cekOngkir');
+
+//KERANJANG
+$routes->get('user/(:num)', 'KeranjangController::index/$1');
+$routes->match(['post', 'options'], 'keranjang/tambah-ke-keranjang/(:num)', 'ProdukController::tambahKeKeranjang/$1', ['filter' => 'cors', 'authFilter']);

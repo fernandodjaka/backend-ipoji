@@ -36,7 +36,7 @@ class PenjualController extends BaseController
         }
 
         $key = getenv('JWT_SECRET');
-        $iat = time(); // current timestamp value
+        $iat = time();
         $exp = $iat + 3600;
 
         $payload = [

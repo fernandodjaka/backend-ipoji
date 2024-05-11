@@ -46,7 +46,7 @@ public function create() {
     $model = new UserModel();
     $existingUser = $model->where('email', $this->request->getVar('email'))->first();
     if ($existingUser) {
-        return $this->fail('Email sudah digunakan', 409); // 409: Conflict
+        return $this->fail('Email sudah digunakan', 409);
     }
 
     helper(['form']);
