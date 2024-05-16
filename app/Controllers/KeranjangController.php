@@ -9,28 +9,58 @@ class KeranjangController extends BaseController
 {
     use ResponseTrait;
 
-    // Fungsi untuk mendapatkan data keranjang
-    // public function index()
-    // {
-    //     // Inisialisasi model KeranjangModel
-    //     $keranjangModel = new KeranjangModel();
+    // Inisialisasi model KeranjangModel
+    protected $keranjangModel;
 
-    //     // Mendapatkan data keranjang dari model
-    //     $keranjang = $keranjangModel->getAllKeranjang();
+    public function __construct()
+    {
+        // Mendefinisikan model KeranjangModel pada konstruktor
+        $this->keranjangModel = new KeranjangModel();
+    }
 
-    //     // Menyusun respons dengan menggunakan ResponseTrait
-    //     return $this->respond($keranjang, 200);
-    // }
-
+    // Fungsi untuk mendapatkan data keranjang berdasarkan user ID
     public function index($userId)
     {
-        // Inisialisasi model KeranjangModel
-        $keranjangModel = new KeranjangModel();
-
         // Mendapatkan data keranjang berdasarkan ID pengguna
-        $keranjang = $keranjangModel->getKeranjangByUserId($userId);
+        $keranjang = $this->keranjangModel->getKeranjangByUserId($userId);
 
         // Menyusun respons dengan menggunakan ResponseTrait
         return $this->respond($keranjang, 200);
     }
+
+    // Fungsi untuk menambah item ke dalam keranjang
+    public function tambahItemKeKeranjang()
+    {
+        // Ambil data yang dikirimkan dari frontend
+        $idProduk = $this->request->getPost('id_produk');
+        $hargaProduk = $this->request->getPost('harga_produk');
+        $userId = $this->request->getPost('id_user');
+        $namaProduk = $this->request->getPost('nama_produk');
+        $gambarProduk = $this->request->getPost('gambar_produk');
+    
+        // Validasi data jika diperlukan
+    
+        // Simpan data ke dalam database menggunakan model
+        $data = [
+            'id_produk' => $idProduk,
+            'harga_produk' => $hargaProduk,
+            'id_user' => $userId,
+            'nama_produk' => $namaProduk,
+            'gambar_produk' => $gambarProduk
+        ];
+        $this->keranjangModel->tambahItemKeKeranjang($data);
+    
+        // Berikan respons sesuai keberhasilan penyimpanan
+        return $this->respondCreated($data, 'Item berhasil ditambahkan ke keranjang.');
+    }    
+    
+    public function getItemsWithProductDetails()
+    {
+        // Mendapatkan semua item keranjang dengan detail produknya
+        $keranjang = $this->keranjangModel->getItemsWithProductDetails();
+    
+        // Menyusun respons dengan menggunakan ResponseTrait
+        return $this->respond($keranjang, 200);
+    }
+    
 }

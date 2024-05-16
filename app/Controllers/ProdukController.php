@@ -111,36 +111,40 @@ public function create()
             // Jika produk dengan $id tidak ditemukan, kembalikan respons 404 Not Found
             return $this->failNotFound('Data tidak ditemukan');
         }
-    }
+    }   
 
     // Fungsi untuk menambahkan produk ke keranjang
     public function tambahKeKeranjang($id = null)
     {
+        // Menerima user_id dari data permintaan
+        $user_id = $this->request->getVar('user_id');
+    
         // Mengambil data produk dari model ProdukModel
         $model = new ProdukModel();
         $produk = $model->find($id);
-
+    
         // Memeriksa apakah produk ditemukan
         if ($produk) {
             // Inisialisasi model KeranjangModel
             $keranjangModel = new KeranjangModel();
-
+    
             // Persiapkan data untuk dimasukkan ke dalam keranjang
             $data = [
                 'id_produk' => $id,
+                'user_id' => $user_id, // Menyertakan user_id
                 'jumlah' => 1 // Jumlah default, bisa disesuaikan sesuai kebutuhan
             ];
-
+    
             // Memasukkan produk ke dalam keranjang menggunakan model KeranjangModel
             $keranjangModel->insert($data);
-
+    
             // Memberikan respons bahwa produk berhasil ditambahkan ke keranjang
             $response = [
                 'status' => 200,
                 'messages' => 'Produk berhasil ditambahkan ke keranjang.',
                 'data' => $produk // Opsi: Mengembalikan data produk yang ditambahkan ke keranjang
             ];
-
+    
             return $this->respond($response);
         } else {
             // Jika produk tidak ditemukan, kembalikan respons error

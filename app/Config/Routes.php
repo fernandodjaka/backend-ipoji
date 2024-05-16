@@ -62,5 +62,16 @@ $routes->get('api/ongkir/getKota', 'Ongkir::getKota');
 $routes->post('api/ongkir/cekOngkir', 'Ongkir::cekOngkir');
 
 //KERANJANG
-$routes->get('user/(:num)', 'KeranjangController::index/$1');
-$routes->match(['post', 'options'], 'keranjang/tambah-ke-keranjang/(:num)', 'ProdukController::tambahKeKeranjang/$1', ['filter' => 'cors', 'authFilter']);
+$routes->get('keranjang/(:num)', 'KeranjangController::index/$1');
+$routes->post('keranjang/tambah-ke-keranjang/(:num)', 'ProdukController::tambahKeKeranjang/$1');
+
+// CART COBA
+$routes->get('cartcoba/(:num)', 'CartControllerCoba::getCart/$1');
+$routes->match(['post', 'options'], 'cartcoba/add', 'CartControllerCoba::add',['filter' => 'cors', 'authFilter']);
+$routes->match(['post', 'options'], 'cartcoba/updateQuantity/(:num)', 'CartControllerCoba::updateQuantity/$1',['filter' => 'cors', 'authFilter']);
+$routes->match(['delete', 'options'], 'cartcoba/removeItem/(:num)', 'CartControllerCoba::removeItem/$1',['filter' => 'cors', 'authFilter']);
+
+// $routes->post('cartcoba/add', 'CartControllerCoba::add');
+// $routes->post('cartcoba/updateQuantity/(:num)', 'CartControllerCoba::updateQuantity/$1');
+// $routes->delete('cartcoba/removeItem/(:num)', 'CartControllerCoba::removeItem/$1');
+// $routes->get('cartcoba/(:num)', 'CartControllerCoba::getCart/$1');
