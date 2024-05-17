@@ -10,10 +10,11 @@ class KeranjangModel extends Model
     protected $primaryKey = 'id_keranjang';
     protected $allowedFields = ['id_user', 'id_produk', 'nama_produk', 'harga_produk', 'gambar_produk'];
 
-    public function getKeranjangByUserId($userId)
+    public function getCartItemsByProductId($id_produk)
     {
-        return $this->where('id_user', $userId)->findAll();
+        return $this->where('id_produk', $id_produk)->findAll();
     }
+
 
     public function tambahProdukKeKeranjang($data)
     {

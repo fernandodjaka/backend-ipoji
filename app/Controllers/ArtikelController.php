@@ -109,57 +109,61 @@ public function create()
 
     public function update($id = null)
     {
+        if ($this->request->getMethod() === 'options') {
+            // Handle OPTIONS request (tidak perlu validasi atau penyimpanan data)
+            return $this->response->setStatusCode(200);
+        }
+    
+        helper(['form']);
+    
+        $rules = [
+            'judul_artikel' => 'required',
+            'deskripsi_artikel' => 'required',
+        ];
+    
+        if ($this->request->getFile('gambar_artikel')) {
+            $rules['gambar_artikel'] = 'uploaded[gambar_artikel]|max_size[gambar_artikel,1024]|is_image[gambar_artikel]|mime_in[gambar_artikel,image/jpg,image/jpeg,image/png]';
+        }
+    
+        if (!$this->validate($rules)) {
+            return $this->response->setStatusCode(400)->setJSON(['error' => $this->validator->getErrors()]);
+        }
+    
         $artikelModel = new ArtikelModel();
         $artikel = $artikelModel->find($id);
     
-        if ($artikel) {
-            // Mengambil data dari request yang dikirim
-            $gambar = $this->request->getFile('gambar_artikel');
-            $namaGambar = $artikel['gambar_artikel'];
-    
-            if ($gambar->isValid()) {
-                if (file_exists('gambar/' . $artikel['gambar_artikel'])) {
-                    unlink('gambar/' . $artikel['gambar_artikel']);
-                }
-    
-                $namaGambar = $gambar->getRandomName();
-                $gambar->move('gambar', $namaGambar);
-            }
-    
-            $data = [
-                'judul_artikel' => $this->request->getVar('judul_artikel'),
-                'deskripsi_artikel' => $this->request->getVar('deskripsi_artikel'),
-                'gambar_artikel' => $namaGambar,
-            ];
-    
-            $this->validate([
-                'judul_artikel' => 'required',
-                'deskripsi_artikel' => 'required',
-                'gambar_artikel' => 'uploaded[gambar_artikel]|max_size[gambar_artikel,1024]|is_image[gambar_artikel]|mime_in[gambar_artikel,image/jpg,image/jpeg,image/png]',
-            ]);
-    
-            if ($this->validator->withRequest($this->request)->run() == false) {
-                return $this->failValidationErrors($this->validator->getErrors());
-            }
-    
-            $proses = $artikelModel->update($id, $data);
-    
-            if ($proses) {
-                $response = [
-                    'status' => 200,
-                    'messages' => 'Data berhasil diubah',
-                    'data' => $data,
-                ];
-            } else {
-                $response = [
-                    'status' => 402,
-                    'messages' => 'Gagal diubah',
-                ];
-            }
-    
-            return $this->respond($response);
+        if (!$artikel) {
+            return $this->failNotFound('Article not found.');
         }
     
-        return $this->failNotFound('Data tidak ditemukan');
+        $gambar = $this->request->getFile('gambar_artikel');
+        $namaGambar = $artikel['gambar_artikel'];
+    
+        if ($gambar->isValid()) {
+            if (file_exists('gambar/' . $artikel['gambar_artikel'])) {
+                unlink('gambar/' . $artikel['gambar_artikel']);
+            }
+    
+            $namaGambar = $gambar->getRandomName();
+            $gambar->move('gambar', $namaGambar);
+        }
+    
+        $data = [
+            'judul_artikel' => $this->request->getVar('judul_artikel'),
+            'deskripsi_artikel' => $this->request->getVar('deskripsi_artikel'),
+            'gambar_artikel' => $namaGambar,
+        ];
+    
+        $artikelModel->update($id, $data);
+    
+        $response = [
+            'status' => 200,
+            'error' => null,
+            'messages' => [
+                'success' => 'Data Updated',
+            ],
+        ];
+    
+        return $this->respond($response);
     }
 }    
