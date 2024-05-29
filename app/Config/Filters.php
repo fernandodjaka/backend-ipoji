@@ -12,42 +12,20 @@ use App\Filters\Cors;
 
 class Filters extends BaseConfig
 {
-    /**
-     * Configures aliases for Filter classes to
-     * make reading things nicer and simpler.
-     *
-     * @var array<string, array<int, string>|string> [filter_name => classname]
-     *                                               or [filter_name => [classname1, classname2, ...]]
-     * @phpstan-var array<string, class-string|list<class-string>>
-     */
     public $aliases = [
-        // Aliases for built-in filters
         'csrf'          => CSRF::class,
         'toolbar'       => DebugToolbar::class,
         'honeypot'      => Honeypot::class,
-        'authFilter'    => \App\Filters\AuthFilter::class, // Menambahkan authFilter ke dalam aliases
-        'cors'          => Cors::class,
         'invalidchars'  => InvalidChars::class,
         'secureheaders' => SecureHeaders::class,
+        'cors'          => Cors::class,
     ];
-    
-    public $filters = [
-        'authFilter' => [], // Menambahkan konfigurasi kosong untuk authFilter
-        'cors'      => ['before' => ['loginadmin']], // Menggunakan filter 'cors' pada rute 'loginadmin'
-    ];
-    
-    /**
-     * List of filter aliases that are always
-     * applied before and after every request.
-     *
-     * @var array<string, array<string, array<string, string>>>|array<string, array<string>>
-     * @phpstan-var array<string, list<string>>|array<string, array<string, array<string, string>>>
-     */
-    public array $globals = [
+
+    public $globals = [
         'before' => [
+            'cors',
             // 'honeypot',
             // 'csrf',
-            'cors'
         ],
         'after' => [
             'toolbar',
@@ -56,25 +34,9 @@ class Filters extends BaseConfig
         ],
     ];
 
-    /**
-     * List of filter aliases that works on a
-     * particular HTTP method (GET, POST, etc.).
-     *
-     * Example:
-     * 'post' => ['foo', 'bar']
-     *
-     * If you use this, you should disable auto-routing because auto-routing
-     * permits any HTTP method to access a controller. Accessing the controller
-     * with a method you don't expect could bypass the filter.
-     */
-    public array $methods = [];
+    public $methods = [];
 
-    /**
-     * List of filter aliases that should run on any
-     * before or after URI patterns.
-     *
-     * Example:
-     * 'isLoggedIn' => ['before' => ['account/*', 'profiles/*']]
-     */
+    public $filters = [
+        'authFilter' => [],
+    ];
 }
-

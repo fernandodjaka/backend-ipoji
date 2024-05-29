@@ -34,11 +34,12 @@ $routes->group('cart', ['namespace' => 'App\Controllers'], function ($routes) {
     $routes->post('add', 'CartController::add');
 });
 
-
+//Cek Ongkir
 $routes->get('api/province', 'RajaOngkirProxy::getProvince');
 $routes->get('api/city', 'RajaOngkirProxy::getCity');
 $routes->post('api/cost', 'RajaOngkirProxy::getCost');
-
+$routes->get('api/ongkir/getKota', 'Ongkir::getKota');
+$routes->post('api/ongkir/cekOngkir', 'Ongkir::cekOngkir');
 
 $routes->resource('orders', ['controller' => 'OrdersController']);
 $routes->match(['post', 'options'], 'api/order', 'OrdersController::createOrder',['filter' => 'cors', 'authFilter']);
@@ -58,8 +59,6 @@ $routes->match(['post', 'options'], 'api/artikel', 'ArtikelController::create',[
 $routes->match(['delete', 'options'], 'delete/artikel/(:segment)', 'ArtikelController::delete/$1',['filter' => 'cors', 'authFilter']);
 $routes->match(['put', 'options'], 'update/artikel/(:segment)', 'ArtikelController::update/$1',['filter' => 'cors', 'authFilter']);
 
-$routes->get('api/ongkir/getKota', 'Ongkir::getKota');
-$routes->post('api/ongkir/cekOngkir', 'Ongkir::cekOngkir');
 
 //KERANJANG
 $routes->get('keranjang/(:num)', 'KeranjangController::index/$1');
@@ -70,6 +69,12 @@ $routes->get('cartcoba/(:num)', 'CartControllerCoba::getCart/$1');
 $routes->match(['post', 'options'], 'cartcoba/add', 'CartControllerCoba::add',['filter' => 'cors', 'authFilter']);
 $routes->match(['post', 'options'], 'cartcoba/updateQuantity/(:num)', 'CartControllerCoba::updateQuantity/$1',['filter' => 'cors', 'authFilter']);
 $routes->match(['delete', 'options'], 'cartcoba/removeItem/(:num)', 'CartControllerCoba::removeItem/$1',['filter' => 'cors', 'authFilter']);
+
+
+// RAJA ONGKIR
+$routes->get('/provinces', 'RajaOngkirController::getProvinces');
+$routes->get('/cities/(:num)', 'RajaOngkirController::getCities/$1');
+$routes->post('/shipping-cost', 'RajaOngkirController::getShippingCost');
 
 // $routes->post('cartcoba/add', 'CartControllerCoba::add');
 // $routes->post('cartcoba/updateQuantity/(:num)', 'CartControllerCoba::updateQuantity/$1');
