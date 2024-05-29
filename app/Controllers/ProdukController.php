@@ -151,4 +151,77 @@ public function create()
             return $this->failNotFound('Produk tidak ditemukan.');
         }
     }
-}
+    public function update($id = null)
+    {
+        helper(['form']);
+    
+        // Define validation rules
+        $rules = [
+            'nama_produk' => 'required',
+            'deskripsi_produk' => 'required',
+            'harga_produk' => 'required|numeric',
+            'berat_produk' => 'required|numeric',
+            'stok_produk' => 'required|integer',
+        ];
+    
+        // Add image validation rule if a new image is uploaded
+        if ($this->request->getFile('gambar_produk')) {
+            $rules['gambar_produk'] = 'mime_in[gambar_produk,image/jpg,image/jpeg,image/png]|max_size[gambar_produk,1024]';
+        }
+    
+        // Validate the input data
+        if (!$this->validate($rules)) {
+            return $this->fail($this->validator->getErrors());
+        }
+    
+        $model = new ProdukModel();
+        $produk = $model->find($id);
+    
+        if (!$produk) {
+            return $this->failNotFound('Product not found.');
+        }
+    
+        // Process the uploaded image file
+        $gambar = $this->request->getFile('gambar_produk');
+        $namaGambar = $produk['gambar_produk'];
+    
+        if ($gambar) {
+            if ($gambar->isValid() && !$gambar->hasMoved()) {
+                if ($namaGambar && file_exists('gambar/' . $namaGambar)) {
+                    unlink('gambar/' . $namaGambar);
+                }
+    
+                $namaGambar = $gambar->getRandomName();
+                $gambar->move('gambar', $namaGambar);
+            }
+        }
+    
+        // Prepare the data for updating
+        $data = [
+            'nama_produk' => $this->request->getVar('nama_produk'),
+            'deskripsi_produk' => $this->request->getVar('deskripsi_produk'),
+            'harga_produk' => $this->request->getVar('harga_produk'),
+            'berat_produk' => $this->request->getVar('berat_produk'),
+            'stok_produk' => $this->request->getVar('stok_produk'),
+            'gambar_produk' => $namaGambar,
+        ];
+    
+        // Log the update data for debugging
+        log_message('info', 'Update data: ' . print_r($data, true));
+    
+        // Update the product in the database
+        $model->update($id, $data);
+    
+        // Prepare the response
+        $response = [
+            'status' => 200,
+            'error' => null,
+            'messages' => [
+                'success' => 'Data Updated',
+            ],
+        ];
+    
+        // Return the JSON response
+        return $this->response->setJSON($response);
+    }
+}    

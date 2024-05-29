@@ -28,9 +28,20 @@ class KeranjangModel extends Model
     }
     
 
-    public function getKeranjangByUserId($userId)
+    public function getCartItemsByProductId($id_produk)
     {
+<<<<<<< HEAD
+        return $this->where('id_produk', $id_produk)->findAll();
+    }
+
+
+    public function tambahProdukKeKeranjang($data)
+    {
+        return $this->insert($data);
+    }
+=======
         // Mendapatkan data keranjang berdasarkan ID pengguna
         return $this->where('id_user', $userId)->findAll();
     }
+>>>>>>> 0bc3728708bae4db018b0a87ec529fbad0fdb0f8
 }

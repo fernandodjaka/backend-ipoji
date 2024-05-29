@@ -18,6 +18,7 @@ $routes->resource('produk', ['controller' => 'ProdukController']);
 $routes->get('produk/(:segment)', 'ProdukController::show/$1',['filter' => 'cors', 'authFilter']);
 $routes->match(['post', 'options'], 'api/produk', 'ProdukController::create',['filter' => 'cors', 'authFilter']);
 $routes->match(['delete', 'options'], 'delete/produk/(:segment)', 'ProdukController::delete/$1',['filter' => 'cors', 'authFilter']);
+$routes->post('update/produk/(:num)', 'ProdukController::update/$1',['filter' => 'cors', 'authFilter']);
 
 $routes->match(['post', 'options'], 'login', 'LoginController::index', ['filter' => 'cors', 'authFilter']);
 $routes->match(['post', 'options'], 'loginadmin', 'AdminController::index', ['filter' => 'cors','authFilter']);
@@ -41,15 +42,6 @@ $routes->post('api/cost', 'RajaOngkirProxy::getCost');
 $routes->get('api/ongkir/getKota', 'Ongkir::getKota');
 $routes->post('api/ongkir/cekOngkir', 'Ongkir::cekOngkir');
 
-$routes->resource('orders', ['controller' => 'OrdersController']);
-$routes->match(['post', 'options'], 'api/order', 'OrdersController::createOrder',['filter' => 'cors', 'authFilter']);
-$routes->match(['delete', 'options'], 'delete/order/(:segment)', 'OrdersController::delete/$1',['filter' => 'cors', 'authFilter']);
-$routes->match(['post', 'options'], 'updateStatus/(:segment)', 'OrdersController::updateStatus/$1',['filter' => 'cors', 'authFilter']);
-
-$routes->resource('delivery', ['controller' => 'DeliveryController']);
-$routes->match(['post', 'options'], 'api/delivery', 'DeliveryController::create',['filter' => 'cors', 'authFilter']);
-$routes->match(['put', 'options'], 'api/delivery/update/(:segment)', 'DeliveryController::update/$1',['filter' => 'cors', 'authFilter']);
-$routes->match(['delete', 'options'], 'api/delivery/delete/(:segment)', 'DeliveryController::delete/$1',['filter' => 'cors', 'authFilter']);
 
 
 
@@ -57,11 +49,15 @@ $routes->resource('artikel', ['controller' => 'ArtikelController']);
 $routes->get('artikel/(:segment)', 'ArtikelController::show/$1');
 $routes->match(['post', 'options'], 'api/artikel', 'ArtikelController::create',['filter' => 'cors', 'authFilter']);
 $routes->match(['delete', 'options'], 'delete/artikel/(:segment)', 'ArtikelController::delete/$1',['filter' => 'cors', 'authFilter']);
-$routes->match(['put', 'options'], 'update/artikel/(:segment)', 'ArtikelController::update/$1',['filter' => 'cors', 'authFilter']);
+$routes->post('update/artikel/(:num)', 'ArtikelController::update/$1',['filter' => 'cors', 'authFilter']);
 
 
 //KERANJANG
 $routes->get('keranjang/(:num)', 'KeranjangController::index/$1');
+<<<<<<< HEAD
+$routes->match(['post', 'options'], 'keranjang/tambah-ke-keranjang/(:num)', 'ProdukController::tambahKeKeranjang/$1', ['filter' => 'cors', 'authFilter']);
+$routes->get('api/keranjang/(:num)', 'KeranjangController::getCartItemsByProductId/$1'); // Rute untuk mengambil item keranjang berdasarkan id_produk
+=======
 $routes->post('keranjang/tambah-ke-keranjang/(:num)', 'ProdukController::tambahKeKeranjang/$1');
 
 // CART COBA
@@ -80,3 +76,4 @@ $routes->post('/shipping-cost', 'RajaOngkirController::getShippingCost');
 // $routes->post('cartcoba/updateQuantity/(:num)', 'CartControllerCoba::updateQuantity/$1');
 // $routes->delete('cartcoba/removeItem/(:num)', 'CartControllerCoba::removeItem/$1');
 // $routes->get('cartcoba/(:num)', 'CartControllerCoba::getCart/$1');
+>>>>>>> 0bc3728708bae4db018b0a87ec529fbad0fdb0f8

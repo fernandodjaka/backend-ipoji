@@ -3,12 +3,25 @@
 namespace App\Controllers;
 
 use App\Models\KeranjangModel;
+use App\Models\ProdukModel; // Perlu mengimport model ProdukModel
 use CodeIgniter\API\ResponseTrait;
 
 class KeranjangController extends BaseController
 {
-    use ResponseTrait;
+    protected $keranjangModel;
+    protected $produkModel; // Menyimpan instance dari ProdukModel
 
+<<<<<<< HEAD
+    public function __construct()
+    {
+        $this->keranjangModel = new KeranjangModel();
+        $this->produkModel = new ProdukModel(); // Inisialisasi ProdukModel
+    }
+
+    public function index()
+    {
+        $cartItems = $this->keranjangModel->findAll();
+=======
     // Inisialisasi model KeranjangModel
     protected $keranjangModel;
 
@@ -23,9 +36,39 @@ class KeranjangController extends BaseController
     {
         // Mendapatkan data keranjang berdasarkan ID pengguna
         $keranjang = $this->keranjangModel->getKeranjangByUserId($userId);
+>>>>>>> 0bc3728708bae4db018b0a87ec529fbad0fdb0f8
 
-        // Menyusun respons dengan menggunakan ResponseTrait
-        return $this->respond($keranjang, 200);
+        $cartWithProducts = [];
+        foreach ($cartItems as $item) {
+            $produk = $this->produkModel->find($item['id_produk']);
+            if ($produk) {
+                $item['nama_produk'] = $produk['nama_produk'];
+                $item['gambar_produk'] = $produk['gambar_produk'];
+                $item['harga_produk'] = $produk['harga_produk'];
+                $cartWithProducts[] = $item;
+            }
+        }
+
+        return $this->response->setJSON($cartWithProducts);
+    }
+
+    // Method untuk mengambil item keranjang berdasarkan id_produk
+    public function getCartItemsByProductId($id_produk)
+    {
+        $cartItems = $this->keranjangModel->getCartItemsByProductId($id_produk);
+
+        $cartWithProducts = [];
+        foreach ($cartItems as $item) {
+            $produk = $this->produkModel->find($item['id_produk']);
+            if ($produk) {
+                $item['nama_produk'] = $produk['nama_produk'];
+                $item['gambar_produk'] = $produk['gambar_produk'];
+                $item['harga_produk'] = $produk['harga_produk'];
+                $cartWithProducts[] = $item;
+            }
+        }
+
+        return $this->response->setJSON($cartWithProducts);
     }
 
     // Fungsi untuk menambah item ke dalam keranjang
