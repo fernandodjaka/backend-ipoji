@@ -11,7 +11,7 @@ class KeranjangController extends BaseController
     protected $keranjangModel;
     protected $produkModel; // Menyimpan instance dari ProdukModel
 
-<<<<<<< HEAD
+
     public function __construct()
     {
         $this->keranjangModel = new KeranjangModel();
@@ -21,22 +21,6 @@ class KeranjangController extends BaseController
     public function index()
     {
         $cartItems = $this->keranjangModel->findAll();
-=======
-    // Inisialisasi model KeranjangModel
-    protected $keranjangModel;
-
-    public function __construct()
-    {
-        // Mendefinisikan model KeranjangModel pada konstruktor
-        $this->keranjangModel = new KeranjangModel();
-    }
-
-    // Fungsi untuk mendapatkan data keranjang berdasarkan user ID
-    public function index($userId)
-    {
-        // Mendapatkan data keranjang berdasarkan ID pengguna
-        $keranjang = $this->keranjangModel->getKeranjangByUserId($userId);
->>>>>>> 0bc3728708bae4db018b0a87ec529fbad0fdb0f8
 
         $cartWithProducts = [];
         foreach ($cartItems as $item) {

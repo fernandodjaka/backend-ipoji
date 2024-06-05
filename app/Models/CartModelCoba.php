@@ -39,7 +39,7 @@ class CartModelCoba extends Model
 
     public function getCartByUserId($userId)
     {
-        return $this->select('cartcoba.*, produk.nama_produk, produk.harga_produk')
+        return $this->select('cartcoba.*, produk.nama_produk, produk.gambar_produk, produk.harga_produk')
                     ->join('produk', 'produk.id_produk = cartcoba.product_id')
                     ->where('cartcoba.user_id', $userId)
                     ->findAll();
