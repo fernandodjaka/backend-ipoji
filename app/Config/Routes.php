@@ -74,6 +74,25 @@ $routes->get('/provinces', 'RajaOngkirController::getProvinces');
 $routes->get('/cities/(:num)', 'RajaOngkirController::getCities/$1');
 $routes->post('/shipping-cost', 'RajaOngkirController::getShippingCost');
 
+//DATA WILAYAH ALAMAT
+
+$routes->get('/api/provinces', 'WilayahController::getProvinces');
+$routes->get('/api/regencies/(:num)', 'WilayahController::getRegencies/$1');
+$routes->get('/api/districts/(:num)', 'WilayahController::getDistricts/$1');
+$routes->get('/api/villages/(:num)', 'WilayahController::getVillages/$1');
+$routes->get('/api/province/(:num)', 'WilayahController::getProvinceById/$1');
+$routes->get('/api/regency/(:num)', 'WilayahController::getRegencyById/$1');
+$routes->get('/api/district/(:num)', 'WilayahController::getDistrictById/$1');
+$routes->get('/api/village/(:num)', 'WilayahController::getVillageById/$1');
+
+
+
+//alamat terbaru
+$routes->group('api', function($routes) {
+    $routes->resource('address', ['controller' => 'AddressController']);
+});
+
+
 // $routes->post('cartcoba/add', 'CartControllerCoba::add');
 // $routes->post('cartcoba/updateQuantity/(:num)', 'CartControllerCoba::updateQuantity/$1');
 // $routes->delete('cartcoba/removeItem/(:num)', 'CartControllerCoba::removeItem/$1');
