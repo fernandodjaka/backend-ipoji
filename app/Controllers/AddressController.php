@@ -2,65 +2,67 @@
 
 namespace App\Controllers;
 
-use App\Models\AddressModel;
 use CodeIgniter\RESTful\ResourceController;
+use App\Models\AddressModel;
 
 class AddressController extends ResourceController
 {
     protected $modelName = 'App\Models\AddressModel';
-    protected $format = 'json';
+    protected $format    = 'json';
 
     public function create()
     {
-        $data = [
-            'full_name' => $this->request->getPost('full_name'),
-            'phone_number' => $this->request->getPost('phone_number'),
-            'province' => $this->request->getPost('province'),
-            'city' => $this->request->getPost('city'),
-            'district' => $this->request->getPost('district'),
-            'subdistrict' => $this->request->getPost('subdistrict'),
-            'detailed_address' => $this->request->getPost('detailed_address'),
-        ];
-
-        if ($this->model->insert($data)) {
-            return $this->respondCreated(['status' => 'success', 'message' => 'Address saved successfully']);
+        $model = new AddressModel();
+        $data = $this->request->getPost();
+    
+        if (empty($data['user_id'])) {
+            return $this->failValidationErrors('User ID is required');
+        }
+    
+        if ($model->insert($data)) {
+            return $this->respondCreated(['message' => 'Address successfully added']);
         } else {
-            return $this->failValidationErrors($this->model->errors());
+            return $this->failValidationErrors($model->errors());
         }
     }
-
-    public function index()
-    {
-        $addresses = $this->model->findAll();
-        return $this->respond($addresses);
-    }
-
-    public function show($id = null)
-    {
-        $address = $this->model->find($id);
-        if ($address) {
-            return $this->respond($address);
-        } else {
-            return $this->failNotFound('Address not found');
-        }
-    }
+    
 
     public function update($id = null)
     {
+        $model = new AddressModel();
         $data = $this->request->getRawInput();
-        if ($this->model->update($id, $data)) {
-            return $this->respondUpdated(['status' => 'success', 'message' => 'Address updated successfully']);
+
+        if (!$model->find($id)) {
+            return $this->failNotFound('Address not found');
+        }
+
+        if ($model->update($id, $data)) {
+            return $this->respond(['message' => 'Address successfully updated']);
         } else {
-            return $this->failValidationErrors($this->model->errors());
+            return $this->failValidationErrors($model->errors());
         }
     }
 
     public function delete($id = null)
     {
-        if ($this->model->delete($id)) {
-            return $this->respondDeleted(['status' => 'success', 'message' => 'Address deleted successfully']);
-        } else {
+        $model = new AddressModel();
+        if (!$model->find($id)) {
             return $this->failNotFound('Address not found');
         }
+
+        $model->delete($id);
+        return $this->respondDeleted(['message' => 'Address successfully deleted']);
+    }
+
+    public function show($id = null)
+    {
+        $model = new AddressModel();
+        $address = $model->where('user_id', $id)->findAll();
+
+        if (empty($address)) {
+            return $this->failNotFound('No addresses found for this user');
+        }
+
+        return $this->respond($address);
     }
 }

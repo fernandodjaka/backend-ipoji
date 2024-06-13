@@ -88,9 +88,17 @@ $routes->get('/api/village/(:num)', 'WilayahController::getVillageById/$1');
 
 
 //alamat terbaru
-$routes->group('api', function($routes) {
-    $routes->resource('address', ['controller' => 'AddressController']);
-});
+
+$routes->resource('address', ['controller' => 'AddressController']);
+
+// $routes->group('api', function($routes) {
+//     $routes->post('address', 'AddressController::create');
+//     $routes->get('address', 'AddressController::index');
+//     $routes->get('address/(:num)', 'AddressController::show/$1');
+//     $routes->put('address/(:num)', 'AddressController::update/$1');
+//     $routes->delete('address/(:num)', 'AddressController::delete/$1');
+// });
+
 
 
 // $routes->post('cartcoba/add', 'CartControllerCoba::add');
