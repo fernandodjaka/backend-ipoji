@@ -35,16 +35,16 @@ $routes->post('logout', 'UserController::logout');
 
 // app/Config/Routes.php
 
-$routes->group('cart', ['namespace' => 'App\Controllers'], function ($routes) {
-    $routes->post('add', 'CartController::add');
-});
+// $routes->group('cart', ['namespace' => 'App\Controllers'], function ($routes) {
+//     $routes->post('add', 'CartController::add');
+// });
 
-//Cek Ongkir
-$routes->get('api/province', 'RajaOngkirProxy::getProvince');
-$routes->get('api/city', 'RajaOngkirProxy::getCity');
-$routes->post('api/cost', 'RajaOngkirProxy::getCost');
-$routes->get('api/ongkir/getKota', 'Ongkir::getKota');
-$routes->post('api/ongkir/cekOngkir', 'Ongkir::cekOngkir');
+// //Cek Ongkir
+// $routes->get('api/province', 'RajaOngkirProxy::getProvince');
+// $routes->get('api/city', 'RajaOngkirProxy::getCity');
+// $routes->post('api/cost', 'RajaOngkirProxy::getCost');
+// $routes->get('api/ongkir/getKota', 'Ongkir::getKota');
+// $routes->post('api/ongkir/cekOngkir', 'Ongkir::cekOngkir');
 
 
 
@@ -56,11 +56,11 @@ $routes->match(['delete', 'options'], 'delete/artikel/(:segment)', 'ArtikelContr
 $routes->post('update/artikel/(:num)', 'ArtikelController::update/$1',['filter' => 'cors', 'authFilter']);
 
 
-//KERANJANG
-$routes->get('keranjang/(:num)', 'KeranjangController::index/$1');
-$routes->match(['post', 'options'], 'keranjang/tambah-ke-keranjang/(:num)', 'ProdukController::tambahKeKeranjang/$1', ['filter' => 'cors', 'authFilter']);
-$routes->get('api/keranjang/(:num)', 'KeranjangController::getCartItemsByProductId/$1'); // Rute untuk mengambil item keranjang berdasarkan id_produk
-$routes->post('keranjang/tambah-ke-keranjang/(:num)', 'ProdukController::tambahKeKeranjang/$1');
+// //KERANJANG
+// $routes->get('keranjang/(:num)', 'KeranjangController::index/$1');
+// $routes->match(['post', 'options'], 'keranjang/tambah-ke-keranjang/(:num)', 'ProdukController::tambahKeKeranjang/$1', ['filter' => 'cors', 'authFilter']);
+// $routes->get('api/keranjang/(:num)', 'KeranjangController::getCartItemsByProductId/$1'); // Rute untuk mengambil item keranjang berdasarkan id_produk
+// $routes->post('keranjang/tambah-ke-keranjang/(:num)', 'ProdukController::tambahKeKeranjang/$1');
 
 // CART COBA
 $routes->get('cartcoba/(:num)', 'CartControllerCoba::getCart/$1');
@@ -69,10 +69,10 @@ $routes->match(['post', 'options'], 'cartcoba/updateQuantity/(:num)', 'CartContr
 $routes->match(['delete', 'options'], 'cartcoba/removeItem/(:num)', 'CartControllerCoba::removeItem/$1',['filter' => 'cors', 'authFilter']);
 
 
-// RAJA ONGKIR
-$routes->get('/provinces', 'RajaOngkirController::getProvinces');
-$routes->get('/cities/(:num)', 'RajaOngkirController::getCities/$1');
-$routes->post('/shipping-cost', 'RajaOngkirController::getShippingCost');
+// // RAJA ONGKIR
+// $routes->get('/provinces', 'RajaOngkirController::getProvinces');
+// $routes->get('/cities/(:num)', 'RajaOngkirController::getCities/$1');
+// $routes->post('/shipping-cost', 'RajaOngkirController::getShippingCost');
 
 //DATA WILAYAH ALAMAT
 
@@ -89,7 +89,10 @@ $routes->get('/api/village/(:num)', 'WilayahController::getVillageById/$1');
 
 //alamat terbaru
 
-$routes->resource('address', ['controller' => 'AddressController']);
+$routes->get('address/(:num)', 'AddressController::show/$1'); // Get addresses by user ID
+$routes->post('address', 'AddressController::create');       // Create a new address
+$routes->put('address/(:num)', 'AddressController::update/$1'); // Update an address
+$routes->delete('address/(:num)', 'AddressController::delete/$1'); // Delete an address
 
 // $routes->group('api', function($routes) {
 //     $routes->post('address', 'AddressController::create');
