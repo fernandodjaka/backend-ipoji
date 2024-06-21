@@ -85,6 +85,10 @@ $routes->get('/api/regency/(:num)', 'WilayahController::getRegencyById/$1');
 $routes->get('/api/district/(:num)', 'WilayahController::getDistrictById/$1');
 $routes->get('/api/village/(:num)', 'WilayahController::getVillageById/$1');
 
+$routes->get('transaction/show/(:num)', 'TransactionController::getTransaction/$1');
+
+$routes->post('transaction', 'TransactionController::create');
+$routes->post('transaction/update-status/(:num)', 'TransactionController::updateStatus/$1');
 
 
 //alamat terbaru

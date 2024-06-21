@@ -44,4 +44,12 @@ class CartModelCoba extends Model
                     ->where('cartcoba.user_id', $userId)
                     ->findAll();
     }
+
+    public function getCartItemWithProductDetails($cartItemId)
+    {
+        return $this->select('cartcoba.*, produk.harga_produk, produk.berat_produk')
+                    ->join('produk', 'produk.id_produk = cartcoba.product_id')
+                    ->where('cartcoba.id', $cartItemId)
+                    ->first();
+    }
 }
