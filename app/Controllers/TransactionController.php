@@ -7,17 +7,22 @@ use App\Models\CartModelCoba;
 use App\Models\AddressModel;
 use App\Models\TransactionModel;
 use App\Models\TransactionDetailModel;
+use App\Models\NotificationModel;
+use App\Models\UserModel;
+
 
 class TransactionController extends ResourceController
 {
     protected $format = 'json';
 
     public function create()
-    {
+    { 
         $cartModel = new CartModelCoba();
         $addressModel = new AddressModel();
         $transactionModel = new TransactionModel();
         $transactionDetailModel = new TransactionDetailModel();
+        $notificationModel = new NotificationModel();
+        $userModel = new UserModel();
 
         $data = $this->request->getJSON(true);
 
@@ -86,6 +91,10 @@ class TransactionController extends ResourceController
         $transactionId = $transactionModel->insert($transactionData, true); // Get inserted ID
 
         if ($transactionId) {
+
+            $notificationModel = new NotificationModel();
+
+        if ($transactionId) {
             // Create transaction details
             foreach ($cartItems as $item) {
                 $transactionDetailData = [
@@ -110,12 +119,22 @@ class TransactionController extends ResourceController
             foreach ($selectedCartItems as $cartItemId) {
                 $cartModel->delete($cartItemId);
             }
+// Create notification for seller
+$sellers = $userModel->where('role', 'penjual')->findAll();
+foreach ($sellers as $seller) {
+$notificationModel->insert([
+    'user_id' => $seller['id'],
+    'message' => 'IPOJI! Ada pesanan masuk, transaction ID: ' . $transactionId
+]);
+}
 
             return $this->respondCreated(['message' => 'Transaction successfully created']);
         } else {
             return $this->fail('Failed to create transaction');
         }
+        
     }
+}
 
 
     public function updateStatus($transactionId)
@@ -124,6 +143,7 @@ class TransactionController extends ResourceController
         $cartModel = new CartModelCoba();
         $productModel = new \App\Models\ProdukModel();
         $transactionDetailModel = new TransactionDetailModel();
+        $notificationModel = new NotificationModel();
     
         $data = $this->request->getJSON(true);
         $newStatus = $data['status'];
@@ -164,7 +184,26 @@ class TransactionController extends ResourceController
                 $cartModel->insert($cartData);
             }
         }
-    
+   // Create notification based on new status
+        $userId = $transaction['user_id'];
+        $message = '';
+
+        switch ($newStatus) {
+            case 'diproses':
+                $message = 'Pesanan Anda Sedang Diproses, transaction ID: ' . $transactionId;
+                break;
+            case 'ditolak':
+                $message = 'Pesanan Anda Ditolak, transaction ID: ' . $transactionId;
+                break;
+            case 'pesanan selesai':
+                $message = 'Pesanan Telah Selesai, transaction ID: ' . $transactionId;
+                break;
+        }
+
+        $notificationModel->insert([
+            'user_id' => $userId,
+            'message' => $message
+        ]);
         return $this->respond(['message' => 'Transaction status updated successfully']);
     }
     
@@ -191,4 +230,14 @@ public function getTransaction($transactionId)
 
     return $this->respond($response);
 }
+
+    public function getNotifications($userId)
+    {
+        $notificationModel = new NotificationModel();
+        
+        // Get notifications for the user
+        $notifications = $notificationModel->where('user_id', $userId)->orderBy('created_at', 'DESC')->findAll();
+
+        return $this->respond($notifications);
     }
+}

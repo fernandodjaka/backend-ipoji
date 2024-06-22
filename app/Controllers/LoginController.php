@@ -23,31 +23,34 @@ class LoginController extends BaseController
         $user = $userModel->where('email', $email)->first();
 
         if (is_null($user)) {
-            // User not found
             return $this->respond(['message' => 'Akun belum didaftarkan'], 401);
         }
 
-        // Check password
         $pwd_verify = password_verify($password, $user['password']);
 
         if (!$pwd_verify) {
-            // Password is incorrect
             return $this->respond(['message' => 'Login failed, incorrect password'], 401);
         }
 
         $key = getenv('JWT_SECRET');
-        $iat = time(); // current timestamp value
-        $exp = $iat + 3600;
+        if (!$key || !is_string($key)) {
+            return $this->respond(['message' => 'Invalid JWT secret key'], 500);
+        }
+
+        $iat = time(); // Waktu saat token dikeluarkan
+        $exp = $iat + 3600; // Token berlaku selama 1 jam
 
         $payload = [
-            "iss" => $user['id'],  // ID pengguna
+            "iss" => $user['id'],
             "aud" => "Audience that the JWT",
             "sub" => "Subject of the JWT",
-            "iat" => $iat, //Time the JWT issued at
-            "exp" => $exp, // Expiration time of token
+            "iat" => $iat,
+            "exp" => $exp,
             "email" => $user['email'],
+            "role" => $user['role']  // Tambahkan role jika ada
         ];
 
+        // Encode token JWT
         $token = JWT::encode($payload, $key, 'HS256');
 
         $response = [
@@ -58,6 +61,7 @@ class LoginController extends BaseController
             'user_id' => $user['id'],
             'user_name' => $user['name'],
             'user_email' => $user['email'],
+            'user_role' => $user['role'],
         ];
 
         return $this->respond($response);
@@ -66,28 +70,27 @@ class LoginController extends BaseController
     public function getUserData()
     {
         $key = getenv('JWT_SECRET');
+        if (!$key || !is_string($key)) {
+            return $this->respond(['message' => 'Invalid JWT secret key'], 500);
+        }
+
         $header = $this->request->getHeaderLine("Authorization");
         $token = null;
 
-        // extract the token from the header
         if (!empty($header)) {
             if (preg_match('/Bearer\s+(.*)$/', $header, $matches)) {
                 $token = $matches[1];
             }
         }
 
-        // check if token is null or empty
         if (is_null($token) || empty($token)) {
             return $this->respond(['error' => 'Access denied'], 401);
         }
 
         try {
             $decoded = JWT::decode($token, new Key($key, 'HS256'));
-
-            // Ambil informasi pengguna dari token
             $iss = $decoded->iss;
 
-            // Dapatkan data pengguna dari database
             $userModel = new UserModel();
             $userData = $userModel->where('id', $iss)->first();
 

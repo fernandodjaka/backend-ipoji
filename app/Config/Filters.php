@@ -19,7 +19,16 @@ class Filters extends BaseConfig
         'invalidchars'  => InvalidChars::class,
         'secureheaders' => SecureHeaders::class,
         'cors'          => Cors::class,
-    ];
+        'role' => \App\Filters\RoleFilter::class,
+        ];
+        
+        public $filters = [
+            'role' => [
+                'before' => ['role']
+            ],
+        ];
+        
+        
 
     public $globals = [
         'before' => [
@@ -36,7 +45,4 @@ class Filters extends BaseConfig
 
     public $methods = [];
 
-    public $filters = [
-        'authFilter' => [],
-    ];
-}
+ }

@@ -22,11 +22,26 @@ $routes->match(['post', 'options'], 'api/produk', 'ProdukController::create',['f
 $routes->match(['delete', 'options'], 'delete/produk/(:segment)', 'ProdukController::delete/$1',['filter' => 'cors', 'authFilter']);
 $routes->post('update/produk/(:num)', 'ProdukController::update/$1',['filter' => 'cors', 'authFilter']);
 
+$routes->post('user/create', 'UserController::create');
+$routes->post('login', 'LoginController::index');
+$routes->get('getUserData', 'LoginController::getUserData', ['filter' => 'role:admin,penjual,user']);
 
-//LOGIN USER,PPENJUAL,ADMIN
-$routes->match(['post', 'options'], 'login', 'LoginController::index', ['filter' => 'cors', 'authFilter']);
-$routes->match(['post', 'options'], 'loginadmin', 'AdminController::index', ['filter' => 'cors','authFilter']);
-$routes->match(['post', 'options'], 'loginpenjual', 'PenjualController::index', ['filter' => 'cors','authFilter']);
+
+// $routes->group('admin', ['filter' => 'role:admin'], function($routes) {
+//     $routes->get('dashboard', 'AdminController::dashboard');
+//     // Tambahkan route admin lainnya di sini
+// });
+
+// $routes->group('seller', ['filter' => 'role:penjual'], function($routes) {
+//     $routes->get('dashboard', 'SellerController::dashboard');
+//     // Tambahkan route penjual lainnya di sini
+// });
+
+// $routes->group('user', ['filter' => 'role:user,admin,penjual'], function($routes) {
+//     $routes->get('profile', 'UserController::profile');
+//     // Tambahkan route user lainnya di sini
+// });
+
 
 
 $routes->post('logout', 'UserController::logout');
@@ -86,7 +101,7 @@ $routes->get('/api/district/(:num)', 'WilayahController::getDistrictById/$1');
 $routes->get('/api/village/(:num)', 'WilayahController::getVillageById/$1');
 
 $routes->get('transaction/show/(:num)', 'TransactionController::getTransaction/$1');
-
+$routes->get('notifications/(:num)', 'TransactionController::getNotifications/$1');
 $routes->post('transaction', 'TransactionController::create');
 $routes->post('transaction/update-status/(:num)', 'TransactionController::updateStatus/$1');
 
