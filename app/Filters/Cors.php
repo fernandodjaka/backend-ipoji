@@ -14,13 +14,11 @@ class Cors implements FilterInterface
         header("Access-Control-Allow-Origin: http://localhost:3000");
         header("Access-Control-Allow-Methods: GET, POST, OPTIONS, PUT, DELETE");
         header("Access-Control-Allow-Headers: Content-Type, Authorization");
+        header("Access-Control-Allow-Credentials: true");
 
         // Menangani preflight request
         if ($request->getMethod() === 'options') {
-            header('Access-Control-Allow-Origin: http://localhost:3000');
-            header("Access-Control-Allow-Methods: GET, POST, OPTIONS, PUT, DELETE");
-            header("Access-Control-Allow-Headers: Content-Type, Authorization");
-            exit(0);
+            exit(0); // Menghentikan eksekusi untuk preflight request
         }
     }
 

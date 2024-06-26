@@ -16,7 +16,8 @@ class AddressModel extends Model
         'city',
         'district',
         'subdistrict',
-        'detailed_address'
+        'detailed_address',
+        'primary'
     ];
 
     public function getAddressesByUser($userId)
@@ -24,49 +25,33 @@ class AddressModel extends Model
         return $this->where('user_id', $userId)->findAll();
     }
 
-    protected $validationRules = [
-        'user_id' => 'required|is_not_unique[user.id]',  // Pastikan 'user' adalah nama tabel pengguna
-        'full_name' => 'required|min_length[3]',
-        'phone_number' => 'required|numeric',
-        'province' => 'required|min_length[3]',
-        'city' => 'required|min_length[3]',
-        'district' => 'required|min_length[3]',
-        'subdistrict' => 'required|min_length[3]',
-        'detailed_address' => 'required|min_length[5]'
-    ];
+    public function getPrimaryAddress($userId)
+    {
+        return $this->where('user_id', $userId)->where('primary', 1)->first();
+    }
 
-    protected $validationMessages = [
-        'user_id' => [
-            'required' => 'User ID is required',
-            'is_not_unique' => 'User ID does not exist'
-        ],
-        'full_name' => [
-            'required' => 'Full name is required',
-            'min_length' => 'Full name must be at least 3 characters long'
-        ],
-        'phone_number' => [
-            'required' => 'Phone number is required',
-            'numeric' => 'Phone number must be numeric'
-        ],
-        'province' => [
-            'required' => 'Province is required',
-            'min_length' => 'Province must be at least 3 characters long'
-        ],
-        'city' => [
-            'required' => 'City is required',
-            'min_length' => 'City must be at least 3 characters long'
-        ],
-        'district' => [
-            'required' => 'District is required',
-            'min_length' => 'District must be at least 3 characters long'
-        ],
-        'subdistrict' => [
-            'required' => 'Subdistrict is required',
-            'min_length' => 'Subdistrict must be at least 3 characters long'
-        ],
-        'detailed_address' => [
-            'required' => 'Detailed address is required',
-            'min_length' => 'Detailed address must be at least 5 characters long'
-        ]
-    ];
+    public function setPrimaryAddress($userId, $addressId)
+    {
+        $this->db->transStart();
+
+        $this->where('user_id', $userId)->set(['primary' => 0])->update();
+        $result = $this->update($addressId, ['primary' => 1]);
+
+        $this->db->transComplete();
+
+        return $result;
+    }
+
+    public function createAddress($data)
+    {
+        $this->db->transStart();
+
+        $this->where('user_id', $data['user_id'])->set(['primary' => 0])->update();
+        $data['primary'] = 1;
+        $this->insert($data);
+
+        $this->db->transComplete();
+
+        return $this->db->transStatus();
+    }
 }

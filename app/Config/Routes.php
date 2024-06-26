@@ -108,10 +108,19 @@ $routes->post('transaction/update-status/(:num)', 'TransactionController::update
 
 //alamat terbaru
 
-$routes->get('address/(:num)', 'AddressController::show/$1'); // Get addresses by user ID
-$routes->post('address', 'AddressController::create');       // Create a new address
-$routes->put('address/(:num)', 'AddressController::update/$1'); // Update an address
-$routes->delete('address/(:num)', 'AddressController::delete/$1'); // Delete an address
+// $routes->get('address/(:num)', 'AddressController::show/$1');
+// $routes->post('address', 'AddressController::create');
+// $routes->put('address/(:num)', 'AddressController::update/$1');
+// $routes->delete('address/(:num)', 'AddressController::delete/$1');
+$routes->group('address', ['filter' => 'cors'], function($routes) {
+    $routes->get('user/(:num)', 'AddressController::getAddressesByUser/$1');
+    $routes->get('primary/(:num)', 'AddressController::getPrimaryAddress/$1');
+    $routes->match(['post', 'options'], 'create', 'AddressController::create', ['filter' => 'cors', 'authFilter']);
+    $routes->match(['put', 'patch', 'options'], 'update/(:num)', 'AddressController::update/$1', ['filter' => 'cors', 'authFilter']);
+    $routes->match(['delete', 'options'], 'delete/(:num)', 'AddressController::delete/$1', ['filter' => 'cors', 'authFilter']);
+    $routes->match(['put', 'patch', 'options'], 'set-primary/(:num)/(:num)', 'AddressController::setPrimary/$1/$2', ['filter' => 'cors', 'authFilter']);
+    // $routes->put('set-primary/(:num)/(:num)', 'AddressController::setPrimary/$1/$2', ['filter' => 'cors', 'authFilter']);
+});
 
 // $routes->group('api', function($routes) {
 //     $routes->post('address', 'AddressController::create');
