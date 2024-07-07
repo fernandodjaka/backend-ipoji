@@ -4,7 +4,6 @@ namespace App\Controllers;
 
 use App\Models\UserModel;
 use CodeIgniter\RESTful\ResourceController;
-use Firebase\JWT\JWT;
 
 class UserController extends ResourceController
 {
