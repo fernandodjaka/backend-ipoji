@@ -23,7 +23,8 @@ $routes->match(['delete', 'options'], 'delete/produk/(:segment)', 'ProdukControl
 $routes->post('update/produk/(:num)', 'ProdukController::update/$1',['filter' => 'cors', 'authFilter']);
 
 $routes->post('user/create', 'UserController::create');
-$routes->post('login', 'LoginController::index');
+$routes->match(['post', 'options'], 'login', 'LoginController::index',['filter' => 'cors', 'authFilter']);
+// $routes->post('login', 'LoginController::index');
 $routes->get('getUserData', 'LoginController::getUserData', ['filter' => 'role:admin,penjual,user']);
 
 
@@ -106,7 +107,12 @@ $routes->post('transaction', 'TransactionController::create');
 $routes->post('transaction/update-status/(:num)', 'TransactionController::updateStatus/$1');
 
 
-//alamat terbaru
+//Order terbaru
+$routes->match(['post', 'options'], 'orders', 'OrderController::create',['filter' => 'cors', 'authFilter']);
+// $routes->post('orders', 'OrderController::create');
+$routes->get('orders/user/(:num)', 'OrderController::getOrdersByUser/$1');
+$routes->get('orders/(:num)', 'OrderController::getOrder/$1');
+
 
 // $routes->get('address/(:num)', 'AddressController::show/$1');
 // $routes->post('address', 'AddressController::create');
